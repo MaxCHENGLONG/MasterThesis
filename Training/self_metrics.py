@@ -84,10 +84,13 @@ def Binary_got_metrics(TP, FP, FN, TN):
     print(f"F-measure: {Fmean:.4f}")
 
     # Discriminat Power X = sensitivity/(1-sepcificity) Y = specificity/(1-sensitivity)
-    X = Sensitivity/(1-Sensitivity)
-    Y = Specificity/(1-Specificity)
-    DP  =  np.sqrt(3)/np.pi * (np.log(X) + np.log(Y))
-    print(f"Discriminant Power: {DP:.4f}")
+    if Specificity == 1 or Sensitivity == 1:
+        print("Discriminant Power: Infinity")
+    else:
+        X = Sensitivity/(1-Sensitivity)
+        Y = Specificity/(1-Specificity)
+        DP  =  np.sqrt(3)/np.pi * (np.log(X) + np.log(Y))
+        print(f"Discriminant Power: {DP:.4f}")
     F2 = 5 * Precision * Sensitivity / (4 * Sensitivity+ Precision)
     print(f"F2-measure: {F2:.4f}")
 
