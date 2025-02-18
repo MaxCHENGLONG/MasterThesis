@@ -1,8 +1,8 @@
 {
-    "Number of label 1 in the final training set": 6131,
-    "Number of label 7 in the final training set (after downsampling)": 1226,
-    "Number of label 1 in the final test set": 1010,
-    "Number of label 7 in the final test set": 982,
+    "Number of label 3 in the final training set": 6131,
+    "Number of label 4 in the final training set (after downsampling)": 1226,
+    "Number of label 3 in the final test set": 1010,
+    "Number of label 4 in the final test set": 982,
     "Total samples in final training set": 7357,
     "Total samples in final test set": 1992,
     "Number of batches in training set": 115,
