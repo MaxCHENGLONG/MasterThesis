@@ -40,25 +40,6 @@ def Binary_got_cofusion_matrix(y_test, y_pred,labels):
 def Binary_got_metrics(TP, FP, FN, TN):
     import numpy as np
     import pandas as pd
-    # ## labels = [7,1] # 7 is positive and 1 is negative
-    # train_label1 = int(labels[0]) # positive
-    # train_label0 = int(labels[1]) # negative
-    # print(f"Positive Label: {train_label1}")
-    # print(f"Negative Label: {train_label0}")
-    # TP = 0
-    # FP = 0
-    # FN = 0
-    # TN = 0
-    # for i in range(len(y_test)):
-    #     if y_test[i] == train_label1 and y_pred[i] == train_label1:
-    #         TP += 1
-    #     if y_test[i] ==  train_label1 and y_pred[i] == train_label0:
-    #         FN += 1
-    #     if y_test[i] == train_label0 and y_pred[i] == train_label1:
-    #         FP += 1
-    #     if y_test[i] == train_label0 and y_pred[i] == train_label0:
-    #         TN += 1
-    #TP, FP, FN, TN = Binary_got_cofusion_matrix(y_train ,y_test, y_pred, labels)
     #                       Classficied Positive   Classified Negative 
     # Actual Positive             TP                   FN
     # Actual Negative             FP                   TN  
@@ -71,7 +52,10 @@ def Binary_got_metrics(TP, FP, FN, TN):
     Sensitivity = TP / (TP + FN)
     Specificity = TN / (TN + FP)
     Precision = TP / (TP + FP)
-    Negative_Predictive_Value = TN / (TN + FN)
+    if TN + FN == 0:
+        Negative_Predictive_Value = np.inf
+    else:
+        Negative_Predictive_Value = TN / (TN + FN)
     print(f"Accuracy: {Accuracy:.4f}")
     print(f"Misclassification rate: {misclassification_rate:.4f}")
     print(f"Sensitivity (Recall): {Sensitivity:.4f}")
@@ -85,28 +69,33 @@ def Binary_got_metrics(TP, FP, FN, TN):
 
     # Discriminat Power X = sensitivity/(1-sepcificity) Y = specificity/(1-sensitivity)
     if Specificity == 1 or Sensitivity == 1:
+        DPower = -999999999
         print("Discriminant Power: Infinity")
     else:
-        X = Sensitivity/(1-Sensitivity)
-        Y = Specificity/(1-Specificity)
-        DP  =  np.sqrt(3)/np.pi * (np.log(X) + np.log(Y))
-        print(f"Discriminant Power: {DP:.4f}")
-    F2 = 5 * Precision * Sensitivity / (4 * Sensitivity+ Precision)
-    print(f"F2-measure: {F2:.4f}")
+        X1 = Sensitivity/(1-Sensitivity)
+        Y1 = Specificity/(1-Specificity)
+        DPower  =  np.sqrt(3)/np.pi * (np.log(X1) + np.log(Y1))
+        print(f"Discriminant Power: {DPower:.4f}")
+    F2measure = 5 * Precision * Sensitivity / (4 * Sensitivity+ Precision)
+    print(f"F2-measure: {F2measure:.4f}")
 
     InvF_05 = 1.25 * Precision * Sensitivity / (0.25 * Sensitivity + Precision)
     print(f"InvF0.5-measure: {InvF_05:.4f}")
 
-    AGF = np.sqrt(F2 * InvF_05)
-    print(f"AGF: {AGF:.4f}")
+    AGFmeasure = np.sqrt(F2measure * InvF_05)
+    print(f"AGF: {AGFmeasure:.4f}")
 
     Balanced_Accuracy = (Sensitivity + Specificity) / 2
     print(f"Balanced Accuracy: {Balanced_Accuracy:.4f}")
 
     # Mattew's Correlation Coefficient
-
-    MCC = (TP *TN - FP * FN) / np.sqrt((TP + FP) * (TP + FN) * (TN + FP) * (TN + FN))
-    print(f"Matthew's Correlation Coefficient: {MCC:.4f}")
+    denom = np.sqrt((TP + FP) * (TP + FN) * (TN + FP) * (TN + FN))
+    if denom == 0:
+        MCCmeasure = -999999999  # 或者使用 np.nan 表示未定义
+    else:
+        MCCmeasure = (TP * TN - FP * FN) / denom
+    #MCCmeasure = (TP *TN - FP * FN) / np.sqrt((TP + FP) * (TP + FN) * (TN + FP) * (TN + FN))
+    print(f"Matthew's Correlation Coefficient: {MCCmeasure:.4f}")
 
     # Cohen's Kappa
     Total_Accuracy = (TP + TN) / (TP + FP + FN + TN)
@@ -119,10 +108,17 @@ def Binary_got_metrics(TP, FP, FN, TN):
     print(f"Youden's Index: {Youden_Index:.4f}")
 
     # Likelihoods Ratios
-
-    LR_pos = Sensitivity / (1 - Specificity)
-    LR_neg = (1 - Sensitivity) / Specificity
+    if Specificity == 1:
+        LR_pos = -99999999
+    else:
+        LR_pos = Sensitivity / (1 - Specificity)
+    if Specificity == 0:
+        LR_neg = -99999999
+    else:
+        LR_neg = (1 - Sensitivity) / Specificity
 
     print(f"Positive Likelihood Ratio: {LR_pos:.4f}")
     print(f"Negative Likelihood Ratio: {LR_neg:.4f}")
+
+    return Accuracy, misclassification_rate, Sensitivity, Specificity, Precision, Negative_Predictive_Value, Gmean, Fmean, DPower, F2measure, InvF_05, AGFmeasure, Balanced_Accuracy, MCCmeasure, Kappa, Youden_Index, LR_pos, LR_neg
 
